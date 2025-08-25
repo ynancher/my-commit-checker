@@ -2,7 +2,7 @@ import os
 import requests
 
 # Get the token from environment
-token = os.getenv("GITHUB_TOKEN")
+token = os.getenv("INPUT_GITHUB_TOKEN")
 if not token:
     raise ValueError("GITHUB_TOKEN not found in environment variables")
 
