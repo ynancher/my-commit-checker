@@ -1,9 +1,11 @@
 name: "My Python Commit Check"
 description: "Checks commit messages using a Python script"
+
 inputs:
   github_token:
     required: true
     description: "GitHub token"
+
 runs:
   using: "composite"
   steps:
@@ -16,9 +18,13 @@ runs:
         python-version: '3.10'
 
     - name: Install dependencies
-      run: pip install -r ${{ github.action_path }}/requirements.txt
+      run: pip install -r "${{ github.action_path }}/requirements.txt"
+      shell: bash
+
+    - name: Export GitHub token to environment
+      run: echo "export GITHUB_TOKEN=${{ inputs.github_token }}" >> $GITHUB_ENV
       shell: bash
 
     - name: Run commit check
-      run: python ${{ github.action_path }}/check_commits.py
+      run: python "${{ github.action_path }}/check_commits.py"
       shell: bash
