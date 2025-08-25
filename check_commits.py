@@ -1,3 +1,6 @@
+import os
+import requests
+import sys
 
 token = os.getenv("INPUT_GITHUB_TOKEN")
 repo = os.getenv("GITHUB_REPOSITORY")
