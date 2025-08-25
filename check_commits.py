@@ -43,7 +43,7 @@ invalid_commits = []
 
 # Validate each commit message
 for commit in commits:
-    message = commit['message']
+    message = commit['commit']['message']
     print("This is the commit -->")
     print(commit)
     sha = commit['sha']
