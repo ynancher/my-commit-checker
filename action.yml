@@ -1,0 +1,9 @@
+name: "My Commit Check"
+description: "Checks commit messages for format"
+inputs:
+  github_token:
+    required: true
+    description: "GitHub token"
+runs:
+  using: "docker"
+  image: "Dockerfile"
