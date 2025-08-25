@@ -1,32 +1,59 @@
 import os
-import subprocess
+import requests
+import sys
 
-# Define the mapping of environment variables to CLI flags
-flag_map = {
-    "MESSAGE": "--message",
-    "BRANCH": "--branch",
-    "AUTHOR_NAME": "--author-name",
-    "AUTHOR_EMAIL": "--author-email",
-    "COMMIT_SIGNOFF": "--commit-signoff"
+# Get environment variables
+token = os.getenv("INPUT_GITHUB_TOKEN")
+repo = os.getenv("GITHUB_REPOSITORY")
+pr_number = os.getenv("PR_NUMBER")
+
+# Validate environment variables
+if not token:
+    raise ValueError("INPUT_GITHUB_TOKEN not found in environment variables")
+if not repo:
+    raise ValueError("GITHUB_REPOSITORY not found in environment variables")
+if not pr_number:
+    raise ValueError("PR_NUMBER not found in environment variables")
+
+# GitHub API URL to fetch commits from the pull request
+url = f"https://api.github.com/repos/{repo}/pulls/{pr_number}/commits"
+
+# Set headers for authentication
+headers = {
+    "Authorization": f"Bearer {token}",
+    "Accept": "application/vnd.github.v3+json"
 }
 
-# Build the list of arguments based on which flags are enabled
-args = []
-for env_var, flag in flag_map.items():
-    if os.getenv(env_var, "false").lower() == "true":
-        args.append(flag)
+# Make the API request
+response = requests.get(url, headers=headers)
 
-# Construct the full command
-command = ["commit-check"] + args
-print("Running command:", " ".join(command))
+# Check for successful response
+if response.status_code != 200:
+    print(f"❌ Failed to fetch PR commits: {response.status_code} {response.text}")
+    sys.exit(1)
 
-# Run the command and capture output
-try:
-    result = subprocess.run(command, check=True, capture_output=True, text=True)
-    with open("result.txt", "w") as f:
-        f.write(result.stdout)
-    print("✅ Commit check passed.")
-except subprocess.CalledProcessError as e:
-    print("❌ Commit check failed.")
-    print(e.stderr)
-    exit(1)
+# Parse the commits
+commits = response.json()
+
+# Define validation rule: message must start with a capital letter and be at least 10 characters long
+def is_valid_commit_message(message):
+    return len(message) >= 10 and message[0].isupper()
+
+# Track validation results
+invalid_commits = []
+
+# Validate each commit message
+for commit in commits:
+    message = commit['commit']['message']
+    sha = commit['sha']
+    if is_valid_commit_message(message):
+        print(f"✅ Valid commit ({sha}): {message}")
+    else:
+        print(f"❌ Invalid commit ({sha}): {message}")
+        invalid_commits.append((sha, message))
+
+# Exit with code 1 if any commit is invalid
+if invalid_commits:
+    sys.exit(1)
+else:
+    sys.exit(0)
