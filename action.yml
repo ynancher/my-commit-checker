@@ -1,9 +1,20 @@
-name: "My Commit Check"
-description: "Checks commit messages for format"
+name: "My Python Commit Check"
+description: "Checks commit messages using a Python script"
 inputs:
   github_token:
     required: true
     description: "GitHub token"
 runs:
-  using: "docker"
-  image: "Dockerfile"
+  using: "composite"
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Run commit check
+      run: python ${{ github.action_path }}/check_commits.py
+      shell: bash
