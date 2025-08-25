@@ -4,7 +4,7 @@ import requests
 import sys
 
 repo = os.getenv("GITHUB_REPOSITORY")
-token = os.getenv("INPUT_GITHUB_TOKEN")
+token = os.getenv("GITHUB_TOKEN")
 event_path = os.getenv("GITHUB_EVENT_PATH")
 
 with open(event_path, 'r') as f:
