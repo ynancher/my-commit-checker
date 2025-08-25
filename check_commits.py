@@ -1,29 +1,32 @@
 import os
-import requests
+import subprocess
 
-# Get the token from environment
-token = os.getenv("INPUT_GITHUB_TOKEN")
-if not token:
-    raise ValueError("GITHUB_TOKEN not found in environment variables")
-
-# Get repo and PR info from environment
-repo = os.getenv("GITHUB_REPOSITORY")  # e.g., "owner/repo"
-pr_number = os.getenv("PR_NUMBER")     # You may need to pass this explicitly
-
-# GitHub API URL to fetch commits from a PR
-url = f"https://api.github.com/repos/{repo}/pulls/{pr_number}/commits"
-
-headers = {
-    "Authorization": f"Bearer {token}",
-    "Accept": "application/vnd.github.v3+json"
+# Define the mapping of environment variables to CLI flags
+flag_map = {
+    "MESSAGE": "--message",
+    "BRANCH": "--branch",
+    "AUTHOR_NAME": "--author-name",
+    "AUTHOR_EMAIL": "--author-email",
+    "COMMIT_SIGNOFF": "--commit-signoff"
 }
 
-response = requests.get(url, headers=headers)
+# Build the list of arguments based on which flags are enabled
+args = []
+for env_var, flag in flag_map.items():
+    if os.getenv(env_var, "false").lower() == "true":
+        args.append(flag)
 
-if response.status_code != 200:
-    print(f"❌ Failed to fetch PR commits: {response.status_code} {response.text}")
+# Construct the full command
+command = ["commit-check"] + args
+print("Running command:", " ".join(command))
+
+# Run the command and capture output
+try:
+    result = subprocess.run(command, check=True, capture_output=True, text=True)
+    with open("result.txt", "w") as f:
+        f.write(result.stdout)
+    print("✅ Commit check passed.")
+except subprocess.CalledProcessError as e:
+    print("❌ Commit check failed.")
+    print(e.stderr)
     exit(1)
-
-commits = response.json()
-for commit in commits:
-    print(f"✅ Commit: {commit['commit']['message']}")
