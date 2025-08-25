@@ -1,86 +1,35 @@
-name: Commit Check Action
-description: Check commit message formatting, branch naming, committer name, email, and more
-author: shenxianpeng
-branding:
-  icon: "git-commit"
-  color: "blue"
+name: "My Python Commit Check"
+description: "Checks commit messages using a Python script"
 inputs:
-  message:
-    description: check commit message formatting convention
-    required: false
-    default: true
-  branch:
-    description: check git branch naming convention
-    required: false
-    default: true
-  author-name:
-    description: check committer author name
-    required: false
-    default: true
-  author-email:
-    description: check committer author email
-    required: false
-    default: true
-  commit-signoff:
-    description: check committer commit signature
-    required: false
-    default: true
-  merge-base:
-    description: check current branch is rebased onto target branch
-    required: false
-    default: false
-  imperative:
-    description: check commit message is in imperative mood
-    required: false
-    default: false
-  dry-run:
-    description: run checks without failing
-    required: false
-    default: false
-  job-summary:
-    description: display job summary to the workflow run
-    required: false
-    default: true
-  pr-comments:
-    description: post results to the pull request comments
-    required: false
-    default: false
+  github_token:
+    required: true
+    description: "GitHub token"
+
 runs:
   using: "composite"
   steps:
-    - name: Install dependencies and run commit-check
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: pip install -r "${{ github.action_path }}/requirements.txt"
       shell: bash
-      run: |
-        if [[ "$RUNNER_OS" == "Linux" ]]; then
-          # https://github.com/pypa/setuptools/issues/3269
-          export DEB_PYTHON_INSTALL_LAYOUT=deb
-        fi
 
-        # Set up virtual environment
-        python3 -m venv venv
-        source venv/bin/activate
+    - name: Export GitHub token to environment
+      run: echo "INPUT_GITHUB_TOKEN=${{ inputs.github_token }}" >> $GITHUB_ENV
+      shell: bash
 
-        # Download artifact
-        python3 -m pip download -r "$GITHUB_ACTION_PATH/requirements.txt"
 
-        # Verify artifact attestations
-        if ! gh attestation verify commit_check-*.whl -R commit-check/commit-check; then
-            echo "Artifact verification failed. Aborting installation."
-            exit 1
-        fi
 
-        # Install artifact
-        python3 -m pip install commit_check-*.whl pygithub-*.whl
+    - name: Extract PR number
+      run: echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+      shell: bash
 
-        python3 "$GITHUB_ACTION_PATH/check_commits.py"
-      env:
-        MESSAGE: ${{ inputs.message }}
-        BRANCH: ${{ inputs.branch }}
-        AUTHOR_NAME: ${{ inputs.author-name }}
-        AUTHOR_EMAIL: ${{ inputs.author-email }}
-        COMMIT_SIGNOFF: ${{ inputs.commit-signoff }}
-        MERGE_BASE: ${{ inputs.merge-base }}
-        IMPERATIVE: ${{ inputs.imperative }}
-        DRY_RUN: ${{ inputs.dry-run }}
-        JOB_SUMMARY: ${{ inputs.job-summary }}
-        PR_COMMENTS: ${{ inputs.pr-comments }}
+    - name: Run commit check
+      run: python "${{ github.action_path }}/check_commits.py"
+      shell: bash
