@@ -20,6 +20,11 @@ runs:
     - name: Install dependencies
       run: pip install -r "${{ github.action_path }}/requirements.txt"
       shell: bash
+
+    - name: Export GitHub token to environment
+      run: echo "INPUT_GITHUB_TOKEN=${{ inputs.github_token }}" >> $GITHUB_ENV
+      shell: bash
+
     - name: Run commit check
       run: python "${{ github.action_path }}/check_commits.py"
       shell: bash
