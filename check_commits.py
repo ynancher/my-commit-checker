@@ -45,6 +45,8 @@ invalid_commits = []
 # Validate each commit message
 for commit in commits:
     message = commit['commit']['message']
+    print("This is the message -->")
+    print(message)
     sha = commit['sha']
     if is_valid_commit_message(message):
         print(f"✅ Valid commit ({sha}): {message}")
