@@ -1,9 +1,55 @@
 name: "My Python Commit Check"
 description: "Checks commit messages using a Python script"
+
 inputs:
   github_token:
     required: true
     description: "GitHub token"
+
+  message:
+    required: false
+    default: "true"
+    description: "Check commit message format"
+
+  branch:
+    required: false
+    default: "true"
+    description: "Check branch name"
+
+  author-name:
+    required: false
+    default: "true"
+    description: "Check author name"
+
+  author-email:
+    required: false
+    default: "true"
+    description: "Check author email"
+
+  commit-signoff:
+    required: false
+    default: "true"
+    description: "Check if commit is signed off"
+
+  merge-base:
+    required: false
+    default: "true"
+    description: "Check merge base"
+
+  imperative:
+    required: false
+    default: "true"
+    description: "Check if message is in imperative mood"
+
+  job-summary:
+    required: false
+    default: "true"
+    description: "Include summary in job output"
+
+  char-limit:
+    required: false
+    default: "72"
+    description: "Character limit for subject and description"
 
 runs:
   using: "composite"
@@ -20,11 +66,19 @@ runs:
       run: pip install -r "${{ github.action_path }}/requirements.txt"
       shell: bash
 
-    - name: Export GitHub token to environment
-      run: echo "INPUT_GITHUB_TOKEN=${{ inputs.github_token }}" >> $GITHUB_ENV
+    - name: Export inputs to environment
+      run: |
+        echo "INPUT_GITHUB_TOKEN=${{ inputs.github_token }}" >> $GITHUB_ENV
+        echo "INPUT_MESSAGE=${{ inputs.message }}" >> $GITHUB_ENV
+        echo "INPUT_BRANCH=${{ inputs.branch }}" >> $GITHUB_ENV
+        echo "INPUT_AUTHOR_NAME=${{ inputs['author-name'] }}" >> $GITHUB_ENV
+        echo "INPUT_AUTHOR_EMAIL=${{ inputs['author-email'] }}" >> $GITHUB_ENV
+        echo "INPUT_COMMIT_SIGNOFF=${{ inputs['commit-signoff'] }}" >> $GITHUB_ENV
+        echo "INPUT_MERGE_BASE=${{ inputs['merge-base'] }}" >> $GITHUB_ENV
+        echo "INPUT_IMPERATIVE=${{ inputs.imperative }}" >> $GITHUB_ENV
+        echo "INPUT_JOB_SUMMARY=${{ inputs['job-summary'] }}" >> $GITHUB_ENV
+        echo "INPUT_CHAR_LIMIT=${{ inputs['char-limit'] }}" >> $GITHUB_ENV
       shell: bash
-
-
 
     - name: Extract PR number
       run: echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
