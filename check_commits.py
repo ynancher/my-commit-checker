@@ -54,9 +54,9 @@ for commit in commits:
         invalid_commits.append((sha, message))
         break
     if is_valid_commit_message(description):
-        print(f"✅ Valid commit ({sha}): {description}")
+        print(f"✅ Valid commit ({sha}): {message}")
     else:
-        print(f"❌ Invalid commit ({sha}): {description}")
+        print(f"❌ Invalid commit ({sha}): {message}")
         invalid_commits.append((sha, message))
 
 # Exit with code 1 if any commit is invalid
