@@ -14,10 +14,8 @@ check_branch = os.getenv("INPUT_BRANCH", "true") == "true"
 check_author_name = os.getenv("INPUT_AUTHOR_NAME", "true") == "true"
 check_author_email = os.getenv("INPUT_AUTHOR_EMAIL", "true") == "true"
 check_signoff = os.getenv("INPUT_COMMIT_SIGNOFF", "true") == "true"
-print("env signoff -->", os.getenv("INPUT_COMMIT_SIGNOFF"))
 check_merge_base = os.getenv("INPUT_MERGE_BASE", "true") == "true"
 check_imperative = os.getenv("INPUT_IMPERATIVE", "true") == "true"
-print("env imperative -->", os.getenv("INPUT_IMPERATIVE"))
 char_limit = int(os.getenv("INPUT_CHAR_LIMIT", "72"))
 
 # Validate required env vars
