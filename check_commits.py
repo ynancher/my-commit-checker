@@ -49,16 +49,15 @@ for commit in commits:
     sha = commit['sha']
     try:
         description = message.splitlines()[2]
-        print("This is desc --> %s", description)
     except Exception as e:
         print("Commit Message has no description! :%s", e)
-        invalid_commits.append((sha, message))
+        invalid_commits.append((sha, description))
         break
     if is_valid_commit_message(description):
-        print(f"✅ Valid commit ({sha}): {message}")
+        print(f"✅ Valid commit ({sha}): {description}")
     else:
-        print(f"❌ Invalid commit ({sha}): {message}")
-        invalid_commits.append((sha, message))
+        print(f"❌ Invalid commit ({sha}): {description}")
+        invalid_commits.append((sha, description))
 
 # Exit with code 1 if any commit is invalid
 if invalid_commits:
