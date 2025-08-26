@@ -26,17 +26,19 @@ headers = {
 # Make the API request
 response = requests.get(url, headers=headers)
 
+
 # Check for successful response
 if response.status_code != 200:
     print(f"❌ Failed to fetch PR commits: {response.status_code} {response.text}")
     sys.exit(1)
 
-# Parse the commits
+# # Parse the commits
 commits = response.json()
 
-# Define validation rule: message must start with a capital letter and be at least 10 characters long
+
 def is_valid_commit_message(message):
-    return len(message) >= 10 and message[0].isupper()
+    return len(message) >= 10 and message[0].isupper() and len(message) <= 72
+
 
 # Track validation results
 invalid_commits = []
@@ -44,13 +46,17 @@ invalid_commits = []
 # Validate each commit message
 for commit in commits:
     message = commit['commit']['message']
-    print("This is the message -->")
-    print(message)
     sha = commit['sha']
-    if is_valid_commit_message(message):
-        print(f"✅ Valid commit ({sha}): {message}")
+    try:
+        description = message.splitlines()[1]
+    except Exception as e:
+        print("Commit Message has no description! :%s", e)
+        invalid_commits.append((sha, message))
+        break
+    if is_valid_commit_message(description):
+        print(f"✅ Valid commit ({sha}): {description}")
     else:
-        print(f"❌ Invalid commit ({sha}): {message}")
+        print(f"❌ Invalid commit ({sha}): {description}")
         invalid_commits.append((sha, message))
 
 # Exit with code 1 if any commit is invalid
