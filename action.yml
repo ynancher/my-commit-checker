@@ -83,8 +83,8 @@ runs:
         echo "INPUT_MERGE_BASE=${{ inputs['merge-base'] }}" >> $GITHUB_ENV
         echo "INPUT_IMPERATIVE=${{ inputs.imperative }}" >> $GITHUB_ENV
         echo "INPUT_JOB_SUMMARY=${{ inputs['job-summary'] }}" >> $GITHUB_ENV
-        echo "INPUT_CHAR_LIMIT=${{ inputs['desc-char-limit'] }}" >> $GITHUB_ENV
-        echo "INPUT_CHAR_LIMIT=${{ inputs['sub-char-limit'] }}" >> $GITHUB_ENV
+        echo "INPUT_DESC_LIMIT=${{ inputs['desc-char-limit'] }}" >> $GITHUB_ENV
+        echo "INPUT_SUB_LIMIT=${{ inputs['sub-char-limit'] }}" >> $GITHUB_ENV
       shell: bash
 
     - name: Extract PR number
