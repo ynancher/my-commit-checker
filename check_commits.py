@@ -14,8 +14,10 @@ check_branch = os.getenv("INPUT_BRANCH", "true") == "true"
 check_author_name = os.getenv("INPUT_AUTHOR_NAME", "true") == "true"
 check_author_email = os.getenv("INPUT_AUTHOR_EMAIL", "true") == "true"
 check_signoff = os.getenv("INPUT_COMMIT_SIGNOFF", "true") == "true"
+print("check_signoff -->",check_signoff)
 check_merge_base = os.getenv("INPUT_MERGE_BASE", "true") == "true"
 check_imperative = os.getenv("INPUT_IMPERATIVE", "true") == "true"
+print("check_signoff -->",check_imperative)
 char_limit = int(os.getenv("INPUT_CHAR_LIMIT", "72"))
 
 # Validate required env vars
@@ -46,7 +48,6 @@ for commit in commits:
     sha = commit['sha']
     message = commit['commit']['message']
     author = commit['commit']['author']
-    print(author)
     lines = message.splitlines()
     subject = lines[2] if len(lines) >= 2 else ""
     description = lines[4] if len(lines) >= 4 else ""
