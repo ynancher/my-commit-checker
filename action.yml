@@ -46,10 +46,16 @@ inputs:
     default: "true"
     description: "Include summary in job output"
 
-  char-limit:
+  desc-char-limit:
     required: false
     default: "72"
-    description: "Character limit for subject and description"
+    description: "Character limit for description"
+    
+  sub-char-limit:
+    required: false
+    default: "50"
+    description: "Character limit for subject"
+
 
 runs:
   using: "composite"
@@ -77,7 +83,8 @@ runs:
         echo "INPUT_MERGE_BASE=${{ inputs['merge-base'] }}" >> $GITHUB_ENV
         echo "INPUT_IMPERATIVE=${{ inputs.imperative }}" >> $GITHUB_ENV
         echo "INPUT_JOB_SUMMARY=${{ inputs['job-summary'] }}" >> $GITHUB_ENV
-        echo "INPUT_CHAR_LIMIT=${{ inputs['char-limit'] }}" >> $GITHUB_ENV
+        echo "INPUT_CHAR_LIMIT=${{ inputs['desc-char-limit'] }}" >> $GITHUB_ENV
+        echo "INPUT_CHAR_LIMIT=${{ inputs['sub-char-limit'] }}" >> $GITHUB_ENV
       shell: bash
 
     - name: Extract PR number
