@@ -39,7 +39,6 @@ commits = response.json()
 invalid_commits = []
 
 def is_imperative(text):
-    # Naive check: first word is a verb in base form (e.g., "Fix", "Add", "Update")
     return bool(re.match(r"^[A-Z][a-z]+", text.strip()))
 
 for commit in commits:
@@ -47,8 +46,8 @@ for commit in commits:
     message = commit['commit']['message']
     author = commit['commit']['author']
     lines = message.splitlines()
-    subject = lines[2] if len(lines) >= 2 else ""
-    description = lines[4] if len(lines) >= 4 else ""
+    subject = lines[0] if len(lines) >= 2 else ""
+    description = lines[1:] if len(lines) >=2 else ""
 
     errors = []
 
@@ -59,8 +58,9 @@ for commit in commits:
             errors.append("Commit message is missing description!")
         if len(subject) > char_limit:
             errors.append(f"Subject exceeds {char_limit} characters.")
-        if len(description) > char_limit:
-            errors.append(f"Description exceeds {char_limit} characters.")
+        for line in description:
+            if len(line) > char_limit:
+                errors.append(f"Line in description: {line} , exceeds maximum limit of {char_limit} characters")
 
     if check_author_name and not author.get("name"):
         errors.append("Missing author name.")
