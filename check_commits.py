@@ -46,6 +46,7 @@ for commit in commits:
     sha = commit['sha']
     message = commit['commit']['message']
     author = commit['commit']['author']
+    print(author)
     lines = message.splitlines()
     subject = lines[2] if len(lines) >= 2 else ""
     description = lines[4] if len(lines) >= 4 else ""
