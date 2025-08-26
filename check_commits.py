@@ -49,7 +49,7 @@ for commit in commits:
     sha = commit['sha']
     try:
         description = message.splitlines()[1]
-        print("This is description --> ", description)
+        print("This is message --> %s", message)
     except Exception as e:
         print("Commit Message has no description! :%s", e)
         invalid_commits.append((sha, message))
