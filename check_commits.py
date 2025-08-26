@@ -53,6 +53,10 @@ for commit in commits:
     errors = []
 
     if check_message:
+        if len(subject) == 0:
+            errors.append("Commit message is missing subject!")
+        if len(description) == 0:
+            errors.append("Commit message is missing description!")
         if len(subject) > char_limit:
             errors.append(f"Subject exceeds {char_limit} characters.")
         if len(description) > char_limit:
