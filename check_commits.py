@@ -46,7 +46,7 @@ for commit in commits:
     message = commit['commit']['message']
     author = commit['commit']['author']
     lines = message.splitlines()
-    subject = lines[0] if len(lines) >= 2 else ""
+    subject = lines[0] if len(lines) >= 1 else ""
     description = lines[1:] if len(lines) >=2 else ""
 
     errors = []
