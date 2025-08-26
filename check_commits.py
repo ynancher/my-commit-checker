@@ -16,7 +16,8 @@ check_author_email = os.getenv("INPUT_AUTHOR_EMAIL", "true") == "true"
 check_signoff = os.getenv("INPUT_COMMIT_SIGNOFF", "true") == "true"
 check_merge_base = os.getenv("INPUT_MERGE_BASE", "true") == "true"
 check_imperative = os.getenv("INPUT_IMPERATIVE", "true") == "true"
-char_limit = int(os.getenv("INPUT_CHAR_LIMIT", "72"))
+desc_char_limit = int(os.getenv("INPUT_DESC_LIMIT", "72"))
+sub_char_limit = int(os.getenv("INPUT_SUB_LIMIT", "50"))
 
 # Validate required env vars
 if not token or not repo or not pr_number:
@@ -56,11 +57,11 @@ for commit in commits:
             errors.append("Commit message is missing subject!")
         if len(description) == 0:
             errors.append("Commit message is missing description!")
-        if len(subject) > char_limit:
-            errors.append(f"Subject exceeds {char_limit} characters.")
+        if len(subject) > sub_char_limit:
+            errors.append(f"Subject exceeds {sub_char_limit} characters.")
         for line in description:
-            if len(line) > char_limit:
-                errors.append(f"Line in description: {line} , exceeds maximum limit of {char_limit} characters")
+            if len(line) > desc_char_limit:
+                errors.append(f"Line in description: {line} , exceeds maximum limit of {desc_char_limit} characters")
 
     if check_author_name and not author.get("name"):
         errors.append("Missing author name.")
