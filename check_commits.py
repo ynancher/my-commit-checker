@@ -8,7 +8,7 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description="Validate commit messages in a GitHub PR.")
     parser.add_argument("--token", required=True)
     parser.add_argument("--repo", required=True)
-    parser.add_argument("pr-number", required=True)
+    parser.add_argument("--pr-number", required=True)
     parser.add_argument("--desc-limit", type=int, default=72)
     parser.add_argument("--sub-limit", type=int, default=50)
     args = parser.parse_args()
