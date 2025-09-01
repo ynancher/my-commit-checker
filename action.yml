@@ -33,18 +33,20 @@ runs:
         restore-keys: |
           ${{ runner.os }}-pip-
 
-    - name: Install dependencies
-      shell: bash
-      run: pip install -r ${{ github.action_path }}/requirements.txt
+  - name: Install dependencies
+    shell: bash
+    run: pip install -r ${{ github.action_path }}/requirements.txt
       
    - name: Extract PR number
      run: echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
      shell: bash
-
-   - name: Upload artifacts
+  
+   - name: Check commit messages
      shell: bash
      run: |
       python ${{ github.action_path }}/check_commits.py \
         --token "${{ inputs.github_token }}" \
-        --description-character-limit "${{ inputs.desc-char-limit }}" \
-        --subject-character-limit "${{ inputs.sub-char-limit }}"
+        --repo "${{ github.repository }}" \
+        --pr-number "${{ github.event.pull_request.number }}" \
+        --desc-limit "${{ inputs.desc-char-limit }}" \
+        --sub-limit "${{ inputs.sub-char-limit }}"
