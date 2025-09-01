@@ -6,16 +6,23 @@ inputs:
     required: true
     description: "GitHub token"
 
+  repo:
+    required: true
+    description: "Repository name in owner/repo format"
+
+  pr_number:
+    required: true
+    description: "Pull request number"
+
   desc-char-limit:
     required: false
     default: "72"
     description: "Character limit for description"
-    
+
   sub-char-limit:
     required: false
     default: "50"
     description: "Character limit for subject"
-
 
 runs:
   using: "composite"
@@ -33,20 +40,16 @@ runs:
         restore-keys: |
           ${{ runner.os }}-pip-
 
-  - name: Install dependencies
-    shell: bash
-    run: pip install -r ${{ github.action_path }}/requirements.txt
-      
-   - name: Extract PR number
-     run: echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
-     shell: bash
-  
-   - name: Check commit messages
-     shell: bash
-     run: |
-      python ${{ github.action_path }}/check_commits.py \
-        --token "${{ inputs.github_token }}" \
-        --repo "${{ github.repository }}" \
-        --pr-number "${{ github.event.pull_request.number }}" \
-        --desc-limit "${{ inputs.desc-char-limit }}" \
-        --sub-limit "${{ inputs.sub-char-limit }}"
+    - name: Install dependencies
+      shell: bash
+      run: pip install -r ${{ github.action_path }}/requirements.txt
+
+    - name: Check commit messages
+      shell: bash
+      run: |
+        python ${{ github.action_path }}/check_commits.py \
+          --token "${{ inputs.github_token }}" \
+          --repo "${{ inputs.repo }}" \
+          --pr-number "${{ inputs.pr_number }}" \
+          --description-character-limit "${{ inputs.desc-char-limit }}" \
+          --subject-character-limit "${{ inputs.sub-char-limit }}"
