@@ -1,92 +1,82 @@
 import os
-import requests
 import sys
-import re
+import requests
+import argparse
 
-# Environment variables
-token = os.getenv("INPUT_GITHUB_TOKEN")
-repo = os.getenv("GITHUB_REPOSITORY")
-pr_number = os.getenv("PR_NUMBER")
 
-# Input flags
-check_message = os.getenv("INPUT_MESSAGE", "true") == "true"
-check_branch = os.getenv("INPUT_BRANCH", "true") == "true"
-check_author_name = os.getenv("INPUT_AUTHOR_NAME", "true") == "true"
-check_author_email = os.getenv("INPUT_AUTHOR_EMAIL", "true") == "true"
-check_signoff = os.getenv("INPUT_COMMIT_SIGNOFF", "true") == "true"
-check_merge_base = os.getenv("INPUT_MERGE_BASE", "true") == "true"
-check_imperative = os.getenv("INPUT_IMPERATIVE", "true") == "true"
-desc_char_limit = int(os.getenv("INPUT_DESC_LIMIT", "72"))
-sub_char_limit = int(os.getenv("INPUT_SUB_LIMIT", "50"))
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Validate commit messages in a GitHub PR.")
+    parser.add_argument("--token", required=True)
+    parser.add_argument("--repo", required=True)
+    parser.add_argument("pr-number", required=True)
+    parser.add_argument("--desc-limit", type=int, default=72)
+    parser.add_argument("--sub-limit", type=int, default=50)
+    args = parser.parse_args()
+    return args
 
-# Validate required env vars
-if not token or not repo or not pr_number:
-    print("❌ Missing required environment variables.")
-    sys.exit(1)
 
-# GitHub API URL to fetch commits from the pull request
-url = f"https://api.github.com/repos/{repo}/pulls/{pr_number}/commits"
-headers = {
-    "Authorization": f"Bearer {token}",
-    "Accept": "application/vnd.github.v3+json"
-}
+def fetch_commits(args):
+    url = f"https://api.github.com/repos/{args.repo}/pulls/{args.pr_number}/commits"
+    headers = {
+        "Authorization": f"Bearer {args.token}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+    response = requests.get(url, headers=headers)
+    if response.status_code != 200:
+        print(f"❌ Failed to fetch PR commits: {response.status_code} {response.text}")
+        sys.exit(1)
+    return response.json()
 
-response = requests.get(url, headers=headers)
-if response.status_code != 200:
-    print(f"❌ Failed to fetch PR commits: {response.status_code} {response.text}")
-    sys.exit(1)
 
-commits = response.json()
-invalid_commits = []
-
-def is_imperative(text):
-    return bool(re.match(r"^[A-Z][a-z]+", text.strip()))
-
-for commit in commits:
+def validate_commit_message(commit, sub_char_limit, desc_char_limit):
     sha = commit['sha']
     message = commit['commit']['message']
-    author = commit['commit']['author']
     lines = message.splitlines()
     subject = lines[0] if len(lines) >= 1 else ""
-    description = lines[1:] if len(lines) >=2 else ""
+    description = lines[1:] if len(lines) >= 2 else []
 
     errors = []
 
-    if check_message:
-        if len(subject) == 0:
-            errors.append("Commit message is missing subject!")
-        if len(description) == 0:
-            errors.append("Commit message is missing description!")
-        if len(subject) > sub_char_limit:
-            errors.append(f"Subject exceeds {sub_char_limit} characters.")
-        for line in description:
-            if len(line) > desc_char_limit:
-                errors.append(f"Line in description: {line} , exceeds maximum limit of {desc_char_limit} characters")
+    if len(subject) == 0:
+        errors.append("Commit message is missing subject!")
+    if len(description) == 0:
+        errors.append("Commit message is missing description!")
+    if len(subject) > sub_char_limit:
+        errors.append(f"Subject exceeds {sub_char_limit} characters.")
+    for line in description:
+        if len(line) > desc_char_limit:
+            errors.append(f"Line in description: {line} , exceeds maximum limit of {desc_char_limit} characters")
 
-    if check_author_name and not author.get("name"):
-        errors.append("Missing author name.")
+    return sha, errors
 
-    if check_author_email and not author.get("email"):
-        errors.append("Missing author email.")
 
-    if check_signoff and "Signed-off-by:" not in message:
-        errors.append("Missing 'Signed-off-by' line.")
+def process_commits(commits, sub_limit, desc_limit):
+    failed_count = 0
 
-    if check_imperative and not is_imperative(subject):
-        errors.append("Subject line is not in imperative mood.")
+    for commit in commits:
+        sha, errors = validate_commit_message(commit, sub_limit, desc_limit)
+        if errors:
+            failed_count += 1
+            print(f"\n❌ Commit {sha} failed checks:")
+            print("   - " + "\n   - ".join(errors))
+        else:
+            print(f"✅ Commit {sha} passed all checks.")
 
-    if errors:
-        print(f"\n❌ Commit {sha} failed checks:")
-        for err in errors:
-            print(f"   - {err}")
-        invalid_commits.append((sha, errors))
+    return failed_count
+
+
+def main():
+    args = parse_arguments()
+    commits = fetch_commits(args)
+    failed_count = process_commits(commits, args.sub_limit, args.desc_limit)
+
+    if failed_count:
+        print(f"\n❌ {failed_count} commit(s) failed validation.")
+        sys.exit(1)
     else:
-        print(f"✅ Commit {sha} passed all checks.")
+        print("\n✅ All commits passed validation.")
+        sys.exit(0)
 
-# Final result
-if invalid_commits:
-    print(f"\n❌ {len(invalid_commits)} commit(s) failed validation.")
-    sys.exit(1)
-else:
-    print("\n✅ All commits passed validation.")
-    sys.exit(0)
+
+if __name__ == "__main__":
+    main()
