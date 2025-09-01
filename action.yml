@@ -6,46 +6,6 @@ inputs:
     required: true
     description: "GitHub token"
 
-  message:
-    required: false
-    default: "true"
-    description: "Check commit message format"
-
-  branch:
-    required: false
-    default: "true"
-    description: "Check branch name"
-
-  author-name:
-    required: false
-    default: "true"
-    description: "Check author name"
-
-  author-email:
-    required: false
-    default: "true"
-    description: "Check author email"
-
-  commit-signoff:
-    required: false
-    default: "true"
-    description: "Check if commit is signed off"
-
-  merge-base:
-    required: false
-    default: "true"
-    description: "Check merge base"
-
-  imperative:
-    required: false
-    default: "true"
-    description: "Check if message is in imperative mood"
-
-  job-summary:
-    required: false
-    default: "true"
-    description: "Include summary in job output"
-
   desc-char-limit:
     required: false
     default: "72"
@@ -60,37 +20,31 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.10'
+        python-version: '3.13'
+
+    - name: Cache Python dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('${{ github.action_path }}/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
 
     - name: Install dependencies
-      run: pip install -r "${{ github.action_path }}/requirements.txt"
       shell: bash
+      run: pip install -r ${{ github.action_path }}/requirements.txt
+      
+   - name: Extract PR number
+     run: echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+     shell: bash
 
-    - name: Export inputs to environment
-      run: |
-        echo "INPUT_GITHUB_TOKEN=${{ inputs.github_token }}" >> $GITHUB_ENV
-        echo "INPUT_MESSAGE=${{ inputs.message }}" >> $GITHUB_ENV
-        echo "INPUT_BRANCH=${{ inputs.branch }}" >> $GITHUB_ENV
-        echo "INPUT_AUTHOR_NAME=${{ inputs['author-name'] }}" >> $GITHUB_ENV
-        echo "INPUT_AUTHOR_EMAIL=${{ inputs['author-email'] }}" >> $GITHUB_ENV
-        echo "INPUT_COMMIT_SIGNOFF=${{ inputs['commit-signoff'] }}" >> $GITHUB_ENV
-        echo "INPUT_MERGE_BASE=${{ inputs['merge-base'] }}" >> $GITHUB_ENV
-        echo "INPUT_IMPERATIVE=${{ inputs.imperative }}" >> $GITHUB_ENV
-        echo "INPUT_JOB_SUMMARY=${{ inputs['job-summary'] }}" >> $GITHUB_ENV
-        echo "INPUT_DESC_LIMIT=${{ inputs['desc-char-limit'] }}" >> $GITHUB_ENV
-        echo "INPUT_SUB_LIMIT=${{ inputs['sub-char-limit'] }}" >> $GITHUB_ENV
-      shell: bash
-
-    - name: Extract PR number
-      run: echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
-      shell: bash
-
-    - name: Run commit check
-      run: python "${{ github.action_path }}/check_commits.py"
-      shell: bash
+   - name: Upload artifacts
+     shell: bash
+     run: |
+      python ${{ github.action_path }}/check_commits.py \
+        --token "${{ inputs.github_token }}" \
+        --description-character-limit "${{ inputs.desc-char-limit }}" \
+        --subject-character-limit "${{ inputs.sub-char-limit }}"
