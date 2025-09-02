@@ -6,7 +6,6 @@ import argparse
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Validate commit messages in a GitHub PR.")
-    parser.add_argument("--token", required=True)
     parser.add_argument("--repo", required=True)
     parser.add_argument("--pr-number", required=True)
     parser.add_argument("--desc-limit", type=int, default=72)
@@ -16,9 +15,10 @@ def parse_arguments():
 
 
 def fetch_commits(args):
+    token = os.getenv("GITHUB_TOKEN")
     url = f"https://api.github.com/repos/{args.repo}/pulls/{args.pr_number}/commits"
     headers = {
-        "Authorization": f"Bearer {args.token}",
+        "Authorization": f"Bearer {token}",
         "Accept": "application/vnd.github.v3+json"
     }
     response = requests.get(url, headers=headers)
