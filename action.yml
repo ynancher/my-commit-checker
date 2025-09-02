@@ -2,10 +2,6 @@ name: "My Python Commit Check"
 description: "Checks commit messages using a Python script"
 
 inputs:
-  github_token:
-    required: true
-    description: "GitHub token"
-
   repo:
     required: true
     description: "Repository name in owner/repo format"
@@ -48,7 +44,7 @@ runs:
       shell: bash
       run: |
         python ${{ github.action_path }}/check_commits.py \
-          --token "${{ inputs.github_token }}" \
+          --token "${{ secrets.GITHUB_TOKEN }}" \
           --repo "${{ inputs.repo }}" \
           --pr-number "${{ inputs.pr_number }}" \
           --desc-limit "${{ inputs.desc-char-limit }}" \
