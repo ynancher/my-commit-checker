@@ -16,16 +16,20 @@ def parse_arguments():
 
 def fetch_commits(args):
     token = os.getenv("GITHUB_TOKEN")
-    url = f"https://api.github.com/repos/{args.repo}/pulls/{args.pr_number}/commits"
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "Accept": "application/vnd.github.v3+json"
-    }
-    response = requests.get(url, headers=headers)
-    if response.status_code != 200:
-        print(f"❌ Failed to fetch PR commits: {response.status_code} {response.text}")
+    if token:
+        url = f"https://api.github.com/repos/{args.repo}/pulls/{args.pr_number}/commits"
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/vnd.github.v3+json"
+        }
+        response = requests.get(url, headers=headers)
+        if response.status_code != 200:
+            print(f"❌ Failed to fetch PR commits: {response.status_code} {response.text}")
+            sys.exit(1)
+        return response.json()
+    else:
+        print(f"❌ No token found to fetch the commits! : {token}")
         sys.exit(1)
-    return response.json()
 
 
 def validate_commit_message(commit, sub_char_limit, desc_char_limit):
