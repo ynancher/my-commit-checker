@@ -51,5 +51,5 @@ runs:
           --token "${{ inputs.github_token }}" \
           --repo "${{ inputs.repo }}" \
           --pr-number "${{ inputs.pr_number }}" \
-          --description-character-limit "${{ inputs.desc-char-limit }}" \
-          --subject-character-limit "${{ inputs.sub-char-limit }}"
+          --desc-limit "${{ inputs.desc-char-limit }}" \
+          --sub-limit "${{ inputs.sub-char-limit }}"
