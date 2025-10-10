@@ -13,12 +13,17 @@ inputs:
   desc-char-limit:
     required: false
     default: "72"
-    description: "Character limit for description"
+    description: "Word wrap limit for each line in the description"
 
   sub-char-limit:
     required: false
     default: "50"
     description: "Character limit for subject"
+
+  check-blank-line:
+    required: false
+    default: true
+    description: "check for a blank line between commit title and body"
 
 runs:
   using: "composite"
@@ -47,4 +52,5 @@ runs:
           --repo "${{ inputs.repo }}" \
           --pr-number "${{ inputs.pr_number }}" \
           --desc-limit "${{ inputs.desc-char-limit }}" \
-          --sub-limit "${{ inputs.sub-char-limit }}"
+          --sub-limit "${{ inputs.sub-char-limit }}" \
+          --check-blank-line "${{ inputs.check-blank-line }}"
