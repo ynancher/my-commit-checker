@@ -66,6 +66,8 @@ def validate_commit_message(commit, sub_char_limit, desc_char_limit, check_blank
         print(lines)
         print("Now subject....")
         print(subject)
+        print("Now description....")
+        print(description)
         print("Now signed off....")
         print(signed_off)
         errors.append("Commit message is missing description!")
