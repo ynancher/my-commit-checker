@@ -50,12 +50,12 @@ def validate_commit_message(commit, sub_char_limit, desc_char_limit, check_blank
     subject = lines[0] if n >= 1 else ""
 
     print(lines)
-        print("Now subject....")
-        print(subject)
-        print("Now description....")
-        print(description)
-        print("Now signed off....")
-        print(signed_off)
+    print("Now subject....")
+    print(subject)
+    print("Now description....")
+    print(description)
+    print("Now signed off....")
+    print(signed_off)
 
     #description will be checked based on 
     if check_blank_line.lower() == "true":
