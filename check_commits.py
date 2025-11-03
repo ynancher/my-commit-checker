@@ -48,7 +48,13 @@ def validate_commit_message(commit, sub_char_limit, desc_char_limit, check_blank
 
     signed_off = lines[-1] if n >= 1 else ""
     subject = lines[0] if n >= 1 else ""
-    description = lines[2:-1] if n >= 3 else []
+
+    #description will be checked based on 
+    if check_blank_line.lower() == "true":
+        description = lines[2:-1] if n >= 3 else []
+    else:
+        description = lines[1:-1] if n >= 2 else []
+
 
     errors = []
 
