@@ -61,25 +61,9 @@ def validate_commit_message(commit, sub_char_limit, desc_char_limit, check_blank
     # validate if commit message exists
     if len(subject) == 0:
         errors.append("Commit message is missing subject!")
-    # validate if description exists
-    if len(description) == 0:
-        print(lines)
-        print("Now subject....")
-        print(subject)
-        print("Now description....")
-        print(description)
-        print("Now signed off....")
-        print(signed_off)
-        errors.append("Commit message is missing description!")
     # validate the length of the subject
     if len(subject) > sub_char_limit:
         errors.append(f"Subject exceeds {sub_char_limit} characters!")
-    # validate word wrap limit of description
-    for line in description:
-        if len(line) > desc_char_limit:
-            errors.append(
-                f"The following line in the commit description exceeds the maximum allowed length of {desc_char_limit} characters: {line}"
-            )
     # check for blank line between subject and description
     if check_blank_line.lower() == "true":
         if n > 1 and lines[1].strip() != "":
@@ -92,6 +76,23 @@ def validate_commit_message(commit, sub_char_limit, desc_char_limit, check_blank
         ):
             errors.append(
                 "Commit description and Signed-off-by must be separated by a blank line"
+            )
+    # validate if description exists
+    if len(description) == 0:
+        print(lines)
+        print("Now subject....")
+        print(subject)
+        print("Now description....")
+        print(description)
+        print("Now signed off....")
+        print(signed_off)
+        errors.append("Commit message is missing description!")
+    
+    # validate word wrap limit of description
+    for line in description:
+        if len(line) > desc_char_limit:
+            errors.append(
+                f"The following line in the commit description exceeds the maximum allowed length of {desc_char_limit} characters: {line}"
             )
 
     return sha, errors
