@@ -84,7 +84,7 @@ def validate_commit_message(commit, sub_char_limit, desc_char_limit, check_blank
                 "Commit description and Signed-off-by must be separated by a blank line"
             )
     # validate if description exists
-    if check_blank_line.lower() == "false" and len(description) == 0:
+    if len(description) == 0:
         errors.append("Commit message is missing description!")
     # validate word wrap limit of description
     for line in description:
