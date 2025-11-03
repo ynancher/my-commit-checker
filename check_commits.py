@@ -49,6 +49,14 @@ def validate_commit_message(commit, sub_char_limit, desc_char_limit, check_blank
     signed_off = lines[-1] if n >= 1 else ""
     subject = lines[0] if n >= 1 else ""
 
+    print(lines)
+        print("Now subject....")
+        print(subject)
+        print("Now description....")
+        print(description)
+        print("Now signed off....")
+        print(signed_off)
+
     #description will be checked based on 
     if check_blank_line.lower() == "true":
         description = lines[2:-1] if n >= 3 else []
@@ -79,13 +87,6 @@ def validate_commit_message(commit, sub_char_limit, desc_char_limit, check_blank
             )
     # validate if description exists
     if len(description) == 0:
-        print(lines)
-        print("Now subject....")
-        print(subject)
-        print("Now description....")
-        print(description)
-        print("Now signed off....")
-        print(signed_off)
         errors.append("Commit message is missing description!")
     
     # validate word wrap limit of description
