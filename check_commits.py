@@ -57,6 +57,11 @@ def validate_commit_message(commit, sub_char_limit, desc_char_limit, check_blank
         errors.append("Commit message is missing subject!")
     # validate if description exists
     if len(description) == 0:
+        print(lines)
+        print("Now subject....")
+        print(subject)
+        print("Now signed off....")
+        print(signed_off)
         errors.append("Commit message is missing description!")
     # validate the length of the subject
     if len(subject) > sub_char_limit:
