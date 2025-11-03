@@ -79,7 +79,7 @@ def validate_commit_message(commit, sub_char_limit, desc_char_limit, check_blank
                 f"The following line in the commit description exceeds the maximum allowed length of {desc_char_limit} characters: {line}"
             )
     # check for blank line between subject and description
-    if description and check_blank_line.lower() == "true":
+    if check_blank_line.lower() == "true":
         if n > 1 and lines[1].strip() != "":
             errors.append(
                 "Commit subject and description must be separated by a blank line"
