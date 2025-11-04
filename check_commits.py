@@ -17,6 +17,8 @@ def parse_arguments():
     parser.add_argument("--sub-limit", type=int, default=50)
     parser.add_argument("--check-blank-line", type=str, default="true")
     args = parser.parse_args()
+    print(args.repo)
+    print(args.pr_number)
     return args
 
 
