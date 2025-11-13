@@ -90,16 +90,17 @@ def process_commits(commits, repo, sub_limit, desc_limit, check_blank_line):
     failed_count = 0
     for commit in commits:
         sha, errors = validate_commit_message(commit, sub_limit, desc_limit, check_blank_line)
+        print(f"::group:: ::error:: Errors in Commit {sha}")
         if errors:
-            print(f"Errors in commit {sha}:")
             failed_count += 1
             for err in errors:
-                print(f"::error file=check_commits.py::{err}")
+                print(f"::error file=check_commits.py::Commit {sha}: {err}")
             add_commit_comment(repo, sha, "\n".join(errors))
             set_commit_status(repo, sha, "failure", "Commit message validation failed")
         else:
             print(f"✅ Commit {sha} passed all checks.")
             set_commit_status(repo, sha, "success", "Commit message validation passed")
+        print("::endgroup::")
     return failed_count
 
 def main():
