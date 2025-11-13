@@ -41,7 +41,7 @@ runs:
       shell: bash
       run: |
         python ${{ github.action_path }}/check_commits.py \
-          --repo "$GITHUB_REPOSITORY"
+          --repo "${{ github.repository }}"
           --pr-number "${{ github.event.number }}"
           --desc-limit "${{ inputs.desc-char-limit }}" \
           --sub-limit "${{ inputs.sub-char-limit }}" \
