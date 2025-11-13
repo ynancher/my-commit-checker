@@ -42,7 +42,7 @@ runs:
       run: |
         python ${{ github.action_path }}/check_commits.py \
           --repo "${{ github.repository }}"
-          --pr-number "${{ github.event.number }}"
+          --pr-number "${{ github.event.pull_request.number }}"
           --desc-limit "${{ inputs.desc-char-limit }}" \
           --sub-limit "${{ inputs.sub-char-limit }}" \
           --check-blank-line "${{ inputs.check-blank-line }}"
