@@ -90,7 +90,7 @@ def process_commits(commits, repo, sub_limit, desc_limit, check_blank_line):
     failed_count = 0
     for commit in commits:
         sha, errors = validate_commit_message(commit, sub_limit, desc_limit, check_blank_line)
-        print(f"::group:: ::error:: Errors in Commit {sha}")
+        print(f"::error::::group:: Errors in Commit {sha}")
         if errors:
             failed_count += 1
             for err in errors:
